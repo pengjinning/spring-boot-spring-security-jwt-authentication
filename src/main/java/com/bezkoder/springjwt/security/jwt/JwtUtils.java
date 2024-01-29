@@ -1,3 +1,11 @@
+/*
+ * @Author: jack ning github@bytedesk.com
+ * @Date: 2024-01-29 11:48:06
+ * @LastEditors: jack ning github@bytedesk.com
+ * @LastEditTime: 2024-01-29 12:57:27
+ * @FilePath: /spring-boot-spring-security-jwt-authentication/src/main/java/com/bezkoder/springjwt/security/jwt/JwtUtils.java
+ * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
+ */
 package com.bezkoder.springjwt.security.jwt;
 
 import java.security.Key;
@@ -29,9 +37,9 @@ public class JwtUtils {
     UserDetailsImpl userPrincipal = (UserDetailsImpl) authentication.getPrincipal();
 
     return Jwts.builder()
-        .setSubject((userPrincipal.getUsername()))
-        .setIssuedAt(new Date())
-        .setExpiration(new Date((new Date()).getTime() + jwtExpirationMs))
+        .subject((userPrincipal.getUsername()))
+        .issuedAt(new Date())
+        .expiration(new Date((new Date()).getTime() + jwtExpirationMs))
         .signWith(key(), SignatureAlgorithm.HS256)
         .compact();
   }
@@ -41,13 +49,13 @@ public class JwtUtils {
   }
 
   public String getUserNameFromJwtToken(String token) {
-    return Jwts.parserBuilder().setSigningKey(key()).build()
-               .parseClaimsJws(token).getBody().getSubject();
+    return Jwts.parser().setSigningKey(key()).build()
+               .parseSignedClaims(token).getPayload().getSubject();
   }
 
   public boolean validateJwtToken(String authToken) {
     try {
-      Jwts.parserBuilder().setSigningKey(key()).build().parse(authToken);
+      Jwts.parser().setSigningKey(key()).build().parse(authToken);
       return true;
     } catch (MalformedJwtException e) {
       logger.error("Invalid JWT token: {}", e.getMessage());
